@@ -1,7 +1,10 @@
 from datetime import datetime
+from typing import re
+
 from flask_wtf import Form
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
-from wtforms.validators import DataRequired, AnyOf, URL
+from wtforms.validators import DataRequired, AnyOf, URL, ValidationError
+
 
 class ShowForm(Form):
     artist_id = StringField(
@@ -216,5 +219,10 @@ class ArtistForm(Form):
         # TODO implement enum restriction
         'facebook_link', validators=[URL()]
     )
+    def validate_phone(self, phone):
+            us_phone_num = '^([0-9]{3})[-][0-9]{3}[-][0-9]{4}$'
+            match = re.search(us_phone_num, phone.data)
+            if not match:
+                raise ValidationError('Error, phone number must be in format xxx-xxx-xxxx')
 
 # TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM

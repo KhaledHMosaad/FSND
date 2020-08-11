@@ -112,6 +112,7 @@ def create_app(test_config=None):
       "questions" : paginated_questions,
       "total_questions" : len(paginated_questions)
     })
+
 # /questions/search?q=MohamedAli
   @cross_origin()
   @app.route('/questions/search', methods=['POST'])
@@ -161,11 +162,13 @@ def create_app(test_config=None):
     payload = request.get_json(force=True)
     previous_questions = payload.get('previous_questions', None)
     category = payload.get('quiz_category', None)
-
-    if category is not None:
-        questions = Question.query.filter(Category.id == category['id']).all()
+    print(category)
+    if category['id'] == 0 or Category.query.get(category['id']) is not None:
+        if category['id'] == 0 :
+            questions = Question.query.all()
+        else:
+            questions = Question.query.filter(Question.category == category['id']).all()
         if previous_questions is not None:
-            print(previous_questions)
             for question in questions:
                 for q in previous_questions:
                     if question.equals(Question.query.get(q)):
@@ -173,7 +176,6 @@ def create_app(test_config=None):
             formatted_questions = [question.format() for question in questions]
         else:
             formatted_questions = [question.format() for question in questions]
-        print(formatted_questions)
         if len(formatted_questions) != 0:
             return jsonify({
                 "success" : True,
@@ -184,7 +186,8 @@ def create_app(test_config=None):
                 "success" : True,
                 "question" : None
             })
-
+    else:
+        abort(404)
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
@@ -200,18 +203,6 @@ def create_app(test_config=None):
         "error" : 422,
         "message" : "Unprocessable"
     }), 422
-
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions to play the quiz. 
-  This endpoint should take category and previous question parameters 
-  and return a random questions within the given category, 
-  if provided, and that is not one of the previous questions. 
-
-  TEST: In the "Play" tab, after a user selects "All" or a category,
-  one question at a time is displayed, the user is allowed to answer
-  and shown whether they were correct or not. 
-  '''
 
   return app
 

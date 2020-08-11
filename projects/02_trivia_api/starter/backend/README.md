@@ -98,3 +98,167 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+## API Reference
+### Getting Started
+* At the present time this app can only run locally and is not hosted as a base URL. The backend app is hosted at the 
+default, ``` http:127.0.0.1:5000/``` which is set as a proxy in the front end configuration.
+* Authentication: This version of the application requires no authetication.
+
+### Error Handling
+* 400 - bad request
+* 422 - Unprocessable
+* 404 - Resource not found.
+
+Errors are returned in JSON objects in the following format:
+```
+{
+    "success" : False,
+    "error" : 400,
+    "message : "bad request"
+}
+```
+
+### Endpoints
+```
+/categories GET
+```
+* Fetches all the categories
+* Request Arguments: None 
+* Returns: JSON Object that includes all success message, categories, total number of categories
+```
+{
+    "success" : True,
+    "categories" : {   
+                        "Science": 1,
+                        "Art": 2,
+                        "Geography": 3,
+                        "History": 4,
+                        "Entertainment": 5,
+                        "Sports": 6
+                    },
+    "total_categories" : 6
+}
+```
+---
+```
+/questions GET
+```
+* Fetches all the questions
+* Request Arguments: None 
+* Returns: JSON Object that includes all success message, questions, total number of questions, categories, current_category
+```
+{
+    "success" : True,
+    "questions" : current_questions [JSON LIST]
+    "total_questions" : 20
+    "categories" : [
+                        {"Science": 1},
+                        {"Art": 2},
+                        {"Geography": 3},
+                        {"History": 4},
+                        {"Entertainment": 5},
+                        {"Sports": 6}
+                    ],
+    "total_categories" : 6
+}
+```
+---
+```
+/questions POST
+```
+* Adds a new question.
+* Returns: success message, questions, total number of questions and In case of failure aborts with code 422.
+* payload:
+```
+{
+    "question" : "How many times do I have to submit this project?",
+    "answer" : "Udacity : Yes"
+    "difficulty" : [1-5]
+    "category" : 1,
+}
+```
+* response : 
+```
+    {
+        "success" : True,
+        "message"  : "New Question Added Successfully",
+        "questions" : current_questions,
+       "total_questions" : len(current_questions)
+     }
+```
+---
+```
+/questions<int:question_id> DELETE
+```
+* Deletes existing question.
+* Returns: success message, questions, total number of questions and In case of failure aborts with code 422 and 404 if question doesn't exist
+* response:
+
+```
+    {
+        "success" : True,
+        "message"  : "Question has been deleted successfully",
+        "questions" : current_questions,
+        "total_questions" : 20
+     }
+```
+---
+```
+/questions/search POST
+```
+* searches for a question.
+* Returns: success message, questions, total number of questions and In case of finding nothing aborts with code 404.
+* payload:
+```
+{
+    "searchTerm" : "what"
+}
+```
+* response : 
+```
+    {
+        "success" : True,
+        "message"  : "New Question Added Successfully",
+        "questions" : current_questions,
+       "total_questions" : 20
+     }
+```
+---
+```
+/categories<int:category_id>/questions GET
+```
+* fetches all questions in a specific category.
+* Returns: success message, questions, total number of questions, categories, current category and aborts with 404 if question doesn't exist
+* response:
+
+```
+    {
+        "success" : True,
+        "questions" : current_questions,
+        "total_questions" : 20,
+        "categories" : categories,
+        "current_category" : category.format()
+    }
+```
+---
+```
+/quizzes POST
+```
+* fetches a random question that hasn't been asked before in the quiz.
+* Returns: success message, question and aborts with 404 if category is not entered.
+* payload:
+```
+{
+    "previous_questions" : [] JSON LIST,
+    "quiz_category" : 1
+}
+```
+* response:
+
+```
+    {
+        "success" : True,
+        "question" : "How many times do I have to assign this project?"
+    }
+```

@@ -1,3 +1,4 @@
+/frontend/node_modules
 projects/02_trivia_api/starter/frontend/node_modules/
 *.idea/
 .vscode

@@ -18,11 +18,12 @@ CORS(app)
 
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
-    drinks = [drink.short() for drink in Drink.query.all()]
-    if len(drinks) != 0:
+    drinks = Drink.query.all()
+    formatted_drinks = [drink.short() for drink in drinks]
+    if len(formatted_drinks) != 0:
         return jsonify({
             "success": True,
-            "drinks": drinks
+            "drinks": formatted_drinks
         })
     abort(404)
 
